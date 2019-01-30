@@ -53,7 +53,7 @@ class Tada
         
         return [
             'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer ' . $this->access_token
+            'Authorization' => 'Bearer ' . $this->token
         ];
     }
     
@@ -64,7 +64,7 @@ class Tada
         }
         
         $header = $this->_getHeader();
-        
+
         $body = [
             'phone' => $phone,
             'action' => 'topup'
@@ -86,6 +86,10 @@ class Tada
         $header = $this->_getHeader();
         
         $response = Requests::post($this->url . '/v1/membership_reward_program/reward/register', $header, json_encode($body));
+        
+        if (isset($response->body)) {
+            return json_decode($response->body);
+        }
     }
 
 }
