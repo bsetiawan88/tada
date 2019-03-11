@@ -12,7 +12,7 @@ class Tada
     var $password;
     var $url;
     var $token;
-    
+
     public function __construct($apiKey, $apiSecret, $username, $password, $url)
     {
         $this->apiKey = $apiKey;
@@ -67,7 +67,7 @@ class Tada
 
         $body = [
             'phone' => $phone,
-            'action' => 'topup'
+            'action' => 'redemption'
         ];
 
         $response = Requests::post($this->url . '/v1/giftcards/card_by_phone', $header, json_encode($body));
@@ -86,6 +86,38 @@ class Tada
         $header = $this->_getHeader();
         
         $response = Requests::post($this->url . '/v1/membership_reward_program/reward/register', $header, json_encode($body));
+        
+        if (isset($response->body)) {
+            return json_decode($response->body);
+        }
+    }
+
+    public function cardDetail($cardNo)
+    {
+        if (empty($this->token)) {
+            $this->_getToken();
+        }
+        
+        $header = $this->_getHeader();
+
+        $response = Requests::get($this->url . '/v1/card_managements/detail/' . $cardNo, $header);
+        if (isset($response->body)) {
+            return json_decode($response->body);
+        }
+    }
+
+    public function balanceRedemption($cardNo, $amount)
+    {
+        if (empty($this->token)) {
+            $this->_getToken();
+        }
+        
+        $header = $this->_getHeader();
+        
+        $response = Requests::post($this->url . '/v1/giftcards/redeem', $header, json_encode([
+            'distributionId' => $cardNo,
+            'amount' => $amount
+        ]));
         
         if (isset($response->body)) {
             return json_decode($response->body);
